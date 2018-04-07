@@ -44,7 +44,7 @@ public class AWTCounter extends Frame  {
         list.add(p4);
 
 
-        Schedule x =NPHPF.schedule(list,1);
+        Schedule x =SRTN.schedule(list,1.0);
 
 
     }
