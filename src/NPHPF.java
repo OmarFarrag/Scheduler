@@ -6,12 +6,12 @@ import static java.util.Comparator.comparing;
 public  class NPHPF {
 
 
-    static Schedule schedule (ArrayList<Process> processesList , int contextSwitch)
+    static Schedule schedule (ArrayList<Process> processesList , double contextSwitch)
     {
 
 
         //arrange the processes ascendingly according to arrival time, breaking ties by descending priority
-        processesList.sort(comparing(Process::getArrivalTime).thenComparing(reverseOrder(comparing(Process::getPriority)).reversed()));
+        processesList.sort(comparing(Process::getArrivalTime).thenComparing(reverseOrder(comparing(Process::getPriority))));
 
         //handle the case of more than one initial process
         //
@@ -54,6 +54,10 @@ public  class NPHPF {
         ArrayList<Double> weightedTurnaroundTime = new ArrayList<Double>();
         weightedTurnaroundTime.add(1.0);
 
+        //Process number for waiting etc list
+        ArrayList<Integer> processNumber = new ArrayList<Integer>();
+        processNumber.add(processesList.get(0).getNumber());
+
         double endTime = processesList.get(0).getBurstTime()+processesList.get(0).getArrivalTime();
 
         for( int i=1; i<processesList.size() ; i++)
@@ -72,6 +76,8 @@ public  class NPHPF {
 
             if(processesList.get(i).getArrivalTime()<=endTime) {
 
+                processNumber.add(processesList.get(i).getNumber());
+
                 waitingTime.add(endTime + contextSwitch - processesList.get(i).getArrivalTime());
 
                 NodesTime.add(endTime);
@@ -88,6 +94,7 @@ public  class NPHPF {
             }
             else
             {
+                processNumber.add(processesList.get(i).getNumber());
                 waitingTime.add(0.0);
 
                 NodesTime.add(endTime);
@@ -104,7 +111,7 @@ public  class NPHPF {
             }
 
         }
-        return new Schedule(NodesTime,NodesProcessesNumbers,waitingTime,turnaroundTime,weightedTurnaroundTime);
+        return new Schedule(NodesTime,NodesProcessesNumbers,waitingTime,turnaroundTime,weightedTurnaroundTime,processNumber);
     }
 
 

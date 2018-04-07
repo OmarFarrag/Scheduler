@@ -35,11 +35,13 @@ public class AWTCounter extends Frame  {
        FileIO manager = new FileIO();
        Process p1 = new Process(1,2,2,5);
        Process p2 = new Process(2,3,1,8);
-        Process p3 = new Process(8,8,8,8);
+        Process p4 = new Process(8,8,8,9);
+        Process p3 = new Process(9,8,8,8);
         ArrayList<Process> list = new ArrayList<Process>();
         list.add(p1);
         list.add(p2);
         list.add(p3);
+        list.add(p4);
 
 
         Schedule x =NPHPF.schedule(list,1);
