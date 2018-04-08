@@ -67,21 +67,24 @@ public class SRTN {
                         previousProcess = currentProcess;
                         currentProcess = getNextSRTNIndex(timePassed, remainingTimeList, processesList);
                         if(previousProcess != currentProcess) {
+                            nodesProcessNumbers.add(processesList.get(previousProcess).getNumber());
                             nodesTime.add(timePassed);
                             timePassed += contextSwitch;
                             nodesTime.add(timePassed);
-                            nodesProcessNumbers.add(currentProcess);
+                            nodesProcessNumbers.add(processesList.get(currentProcess).getNumber());
                         }
                     }
                     else {
                         timePassed += remainingTimeList.get(currentProcess);
                         remainingTimeList.set(currentProcess, 0.0);
                         nodesTime.add(timePassed);
-                        nodesProcessNumbers.add(currentProcess);
+                        nodesProcessNumbers.add(processesList.get(currentProcess).getNumber());
+                        timePassed += contextSwitch;
+                        nodesTime.add(timePassed);
                     }
                 }
                 else {
-                    currentProcess = getSRTNIndex(remainingTimeList, processesList);
+                    currentProcess = getNextSRTNIndex(timePassed, remainingTimeList, processesList);
                     nodesTime.add(timePassed);
                     nodesProcessNumbers.add(processesList.get(getNextSRTNIndex(
                             timePassed, remainingTimeList, processesList

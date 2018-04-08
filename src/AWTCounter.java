@@ -44,9 +44,7 @@ public class AWTCounter extends Frame  {
         list.add(p4);
         list.add(new Process(10, 3, 1, 1));
 
-
         Schedule x = SRTN.schedule(list,1.0);
-
 
     }
 
