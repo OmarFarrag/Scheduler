@@ -44,7 +44,8 @@ public class SRTN {
 
         int arrivalTimeIndex;
         //the process executing right now
-        int currentProcess;
+        int currentProcess = 0;
+        int previousProcess = 0;
 
         while(true) {
 
@@ -63,12 +64,13 @@ public class SRTN {
                         remainingTimeList.set(currentProcess,
                                 remainingTimeList.get(currentProcess)
                                         - (nextArrivalTime - processesList.get(currentProcess).getArrivalTime()));
-                        arrivalTimeIndex = getNextArrivalTimeIndex(timePassed, processesList);
-                        if(remainingTimeList.get(arrivalTimeIndex) < remainingTimeList.get(currentProcess)) {
+                        previousProcess = currentProcess;
+                        currentProcess = getNextSRTNIndex(timePassed, remainingTimeList, processesList);
+                        if(previousProcess != currentProcess) {
                             nodesTime.add(timePassed);
                             timePassed += contextSwitch;
                             nodesTime.add(timePassed);
-                            nodesProcessNumbers.add(arrivalTimeIndex);
+                            nodesProcessNumbers.add(currentProcess);
                         }
                     }
                     else {
@@ -79,7 +81,16 @@ public class SRTN {
                     }
                 }
                 else {
-
+                    currentProcess = getSRTNIndex(remainingTimeList, processesList);
+                    nodesTime.add(timePassed);
+                    nodesProcessNumbers.add(processesList.get(getNextSRTNIndex(
+                            timePassed, remainingTimeList, processesList
+                    )).getNumber());
+                    timePassed += remainingTimeList.get(currentProcess);
+                    nodesProcessNumbers.add(processesList.get(currentProcess).getNumber());
+                    nodesTime.add(timePassed);
+                    remainingTimeList.set(currentProcess, 0.0);
+                    timePassed += contextSwitch;
                 }
 
             }
