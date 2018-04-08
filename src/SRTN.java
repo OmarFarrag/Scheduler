@@ -40,13 +40,11 @@ public class SRTN {
 
         //remainingTime for the processes to finish.
         Double timePassed = processesList.get(0).getArrivalTime();
-        Double nextArrivalTime = 0.0;
+        Double nextArrivalTime;
 
-        int arrivalTimeIndex = 0;
+        int arrivalTimeIndex;
         //the process executing right now
-        int currentProcess = 0;
-
-        boolean isLastProcess = false;
+        int currentProcess;
 
         while(true) {
 
@@ -55,70 +53,33 @@ public class SRTN {
             }
 
             if(timePassed < processesList.get(processesList.size() - 1).getArrivalTime()) {
-                if(arrivalTimeIndex < processesList.size() - 1) {
-                    nextArrivalTime = processesList.get(arrivalTimeIndex + 1).getArrivalTime();
-                }
-                else {
-                    isLastProcess = true;
-                }
-                if(timePassed >= nextArrivalTime && !isLastProcess) {
+                nextArrivalTime = processesList.get(
+                        getNextArrivalTimeIndex(timePassed, processesList)).getArrivalTime();
+                if(timePassed < nextArrivalTime) {
                     currentProcess = getNextSRTNIndex(timePassed, remainingTimeList, processesList);
-                    if (remainingTimeList.get(currentProcess) > nextArrivalTime) {
-                        timePassed = remainingTimeList.get(currentProcess)
-                                - (nextArrivalTime - processesList.get(currentProcess).getArrivalTime());
-                        remainingTimeList.set(currentProcess, timePassed);
-                    } else {
+                    if(nextArrivalTime - timePassed < remainingTimeList.get(currentProcess)) {
+                        timePassed += (nextArrivalTime
+                                - processesList.get(currentProcess).getArrivalTime());
+                        remainingTimeList.set(currentProcess,
+                                remainingTimeList.get(currentProcess)
+                                        - (nextArrivalTime - processesList.get(currentProcess).getArrivalTime()));
+                        arrivalTimeIndex = getNextArrivalTimeIndex(timePassed, processesList);
+                        if(remainingTimeList.get(arrivalTimeIndex) < remainingTimeList.get(currentProcess)) {
+                            nodesTime.add(timePassed);
+                            timePassed += contextSwitch;
+                            nodesTime.add(timePassed);
+                            nodesProcessNumbers.add(arrivalTimeIndex);
+                        }
+                    }
+                    else {
                         timePassed += remainingTimeList.get(currentProcess);
                         remainingTimeList.set(currentProcess, 0.0);
-                        nodesProcessNumbers.add(processesList.get(currentProcess).getNumber());
                         nodesTime.add(timePassed);
-                        //nodesTime.add(timePassed + contextSwitch);
-                        timePassed += contextSwitch;
-                        currentProcess = getNextSRTNIndex(timePassed, remainingTimeList, processesList);
-                        nodesProcessNumbers.add(processesList.get(
-                                getNextSRTNIndex(timePassed, remainingTimeList, processesList)
-                        ).getNumber());
+                        nodesProcessNumbers.add(currentProcess);
                     }
-                    arrivalTimeIndex++;
-                }
-                else if (timePassed >= nextArrivalTime && isLastProcess) {
-                    timePassed += remainingTimeList.get(currentProcess);
-                    remainingTimeList.set(currentProcess, 0.0);
-                    nodesTime.add(timePassed);
-                    //nodesTime.add(timePassed + contextSwitch);
-                    timePassed += contextSwitch;
-                    currentProcess = getNextSRTNIndex(timePassed, remainingTimeList, processesList);
-                    nodesProcessNumbers.add(processesList.get(
-                            getNextSRTNIndex(timePassed, remainingTimeList, processesList)
-                    ).getNumber());
                 }
                 else {
-                    if(timePassed < nextArrivalTime && remainingTimeList.get(currentProcess) <= 0.0) {
-                        timePassed = nextArrivalTime;
-                        currentProcess = getNextSRTNIndex(timePassed,
-                                remainingTimeList, processesList);
-                    }
-                    while(timePassed < nextArrivalTime && remainingTimeList.get(currentProcess) > 0.0) {
-                        if(nextArrivalTime - processesList.get(currentProcess).getArrivalTime()
-                                > remainingTimeList.get(currentProcess)) {
-                            nodesTime.add(timePassed);
-                            timePassed += remainingTimeList.get(currentProcess);
-                            nodesProcessNumbers.add(processesList.get(currentProcess).getNumber());
-                            nodesTime.add(timePassed);
-                            remainingTimeList.set(currentProcess, 0.0);
-                            //nodesTime.add(timePassed + contextSwitch);
-                            timePassed += contextSwitch;
-                            arrivalTimeIndex++;
-                            currentProcess = getNextSRTNIndex(timePassed, remainingTimeList, processesList);
-                        }
-                        else {
-                            timePassed += remainingTimeList.get(currentProcess)
-                                    - (nextArrivalTime - processesList.get(currentProcess).getArrivalTime());
-                            remainingTimeList.set(currentProcess,
-                                    remainingTimeList.get(currentProcess)
-                                            - (nextArrivalTime - processesList.get(currentProcess).getArrivalTime()));
-                        }
-                    }
+
                 }
 
             }
@@ -132,7 +93,6 @@ public class SRTN {
                 nodesProcessNumbers.add(processesList.get(currentProcess).getNumber());
                 nodesTime.add(timePassed);
                 remainingTimeList.set(currentProcess, 0.0);
-                //nodesTime.add(timePassed + contextSwitch);
                 timePassed += contextSwitch;
 
             }
@@ -187,6 +147,19 @@ public class SRTN {
             sum += remainingTimeList.get(i);
         }
         return sum;
+    }
+
+    public static int getNextArrivalTimeIndex(Double timePassed, ArrayList<Process> processes) {
+        Double arrivalTime = 10000.0;
+        int index = 0;
+        for(int i = 0; i < processes.size(); i++) {
+            if(processes.get(i).getArrivalTime() < arrivalTime
+                    && timePassed < processes.get(i).getArrivalTime()) {
+                index = i;
+                arrivalTime = processes.get(i).getArrivalTime();
+            }
+        }
+        return index;
     }
 
     public static void setWaitingTimeList(ArrayList<Double> waitingTimeList) {

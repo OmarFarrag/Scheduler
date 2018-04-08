@@ -33,8 +33,8 @@ public class AWTCounter extends Frame  {
     // The entry main() method
     public static void main(String[] args) {
        FileIO manager = new FileIO();
-       Process p1 = new Process(1,2,2,5);
-       Process p2 = new Process(2,3,1,8);
+       Process p1 = new Process(1,2,4,5);
+       Process p2 = new Process(2,3,2,8);
         Process p4 = new Process(8,8,8,9);
         Process p3 = new Process(9,8,8,8);
         ArrayList<Process> list = new ArrayList<Process>();
@@ -42,9 +42,10 @@ public class AWTCounter extends Frame  {
         list.add(p2);
         list.add(p3);
         list.add(p4);
+        list.add(new Process(10, 3, 1, 1));
 
 
-        Schedule x =SRTN.schedule(list,1.0);
+        Schedule x = SRTN.schedule(list,0.1);
 
 
     }
