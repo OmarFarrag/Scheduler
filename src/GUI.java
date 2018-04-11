@@ -1,4 +1,4 @@
-import com.sun.imageio.plugins.jpeg.JPEGImageMetadataFormatResources;
+
 
 import javax.swing.*;
 import java.awt.*;

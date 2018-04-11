@@ -36,10 +36,21 @@ public  class NPHPF {
         }
 */
 
+
+
         //First node is the start
         ArrayList<Double> NodesTime = new ArrayList<Double>();
+        //if the first node is not at time 0
+        if(processesList.get(0).getArrivalTime()>0)
+        {
+            NodesTime.add(0.0);
+        }
         NodesTime.add(processesList.get(0).getArrivalTime());
         ArrayList<Integer> NodesProcessesNumbers = new ArrayList<Integer>();
+        if(processesList.get(0).getArrivalTime()>0)
+        {
+            NodesProcessesNumbers.add(0);
+        }
         NodesProcessesNumbers.add(processesList.get(0).getNumber());
 
         //Waiting time list
@@ -90,7 +101,7 @@ public  class NPHPF {
 
                 turnaroundTime.add(endTime - processesList.get(i).getArrivalTime());
 
-                weightedTurnaroundTime.add((endTime - processesList.get(i).getArrivalTime()) / (contextSwitch + processesList.get(i).getBurstTime()));
+                weightedTurnaroundTime.add((endTime - processesList.get(i).getArrivalTime()) / ( processesList.get(i).getBurstTime()));
             }
             else
             {
@@ -111,6 +122,8 @@ public  class NPHPF {
             }
 
         }
+        NodesTime.add(endTime);
+        NodesProcessesNumbers.add(0);
         return new Schedule(NodesTime,NodesProcessesNumbers,waitingTime,turnaroundTime,weightedTurnaroundTime,processNumber);
     }
 
