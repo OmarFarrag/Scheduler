@@ -71,14 +71,43 @@ public class FileIO {
 
     public void generateOutput(ArrayList<Integer> processNumber, ArrayList<Double> waitingTime,ArrayList<Double> turnaroundTime,ArrayList<Double> weightedTurnaroundTime)
     {
-        BufferedWriter writer;
+        BufferedWriter writer=null;
+        double sumWeighted=0;
+        double sumTurnaround=0;
         try{
-            writer = new BufferedWriter(new FileWriter("output"));
+            writer = new BufferedWriter(new FileWriter("output.txt"));
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
+
+        try {
+            writer.write(processNumber.get(0)+" ");
+            writer.append(waitingTime.get(0).toString()+" ");
+            writer.append(turnaroundTime.get(0).toString()+" ");
+            writer.append(weightedTurnaroundTime.get(0).toString()+System.lineSeparator() );
+            sumWeighted+=weightedTurnaroundTime.get(0);
+            sumTurnaround+=turnaroundTime.get(0);
+
+            for(int i=1; i<processNumber.size(); i++)
+            {
+                writer.write(processNumber.get(i)+" ");
+                writer.append(waitingTime.get(i).toString()+" ");
+                writer.append(turnaroundTime.get(i).toString()+" ");
+                writer.append(weightedTurnaroundTime.get(i).toString()+System.lineSeparator() );
+                sumWeighted+=weightedTurnaroundTime.get(i);
+                sumTurnaround+=turnaroundTime.get(i);
+            }
+            double avgWait = (sumWeighted/processNumber.size());
+            double avgTurnaround = (sumTurnaround/processNumber.size());
+            writer.append(Double.toString(avgWait) + System.lineSeparator());
+            writer.append(Double.toString(avgTurnaround));
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
 
     }

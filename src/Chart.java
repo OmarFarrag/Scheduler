@@ -76,7 +76,7 @@ import java.util.ArrayList;
             list.add(new Process(temp.getNumber(),temp.getArrivalTime(), temp.getBurstTime(), temp.getPriority()));
         }
 
-        Schedule x = RoundRobin.schedule(list,0,3);
+        Schedule x = NPHPF.schedule(list,0);
 
         Chart chart = new Chart("Browser Usage Statistics",
                 "Which Browser are you using?",x.m_NodesProcessesNumbers,x.m_NodesTime);
