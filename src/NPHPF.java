@@ -81,7 +81,7 @@ public  class NPHPF {
                     Collections.swap(processesList, i, j);
                 }
 
-               else {break;}
+
 
             }
 

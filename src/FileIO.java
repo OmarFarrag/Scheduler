@@ -12,7 +12,7 @@ public class FileIO {
         ArrayList<Process> processes = null;
         try {
 
-            Scanner s = new Scanner(new File("E:/OSProject12/InputFile.txt"));
+            Scanner s = new Scanner(new File("E:/Scheduler/HPF1.txt"));
             ArrayList<String> list = new ArrayList<String>();
             while (s.hasNext()) {
                 list.add(s.next());
@@ -50,7 +50,7 @@ public class FileIO {
 
 
         for(int i = 0; i < stringArr.size(); i+=4) {
-            IDs.add(Integer.parseInt(stringArr.get(i+1)));
+            IDs.add(Integer.parseInt(stringArr.get(i)));
             arrivalTime.add(Double.parseDouble(stringArr.get(i+1)));
             burstTime.add(Double.parseDouble(stringArr.get(i+2)));
             priority.add(Integer.parseInt(stringArr.get(i+3)));

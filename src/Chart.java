@@ -16,6 +16,7 @@ import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 import java.awt.*;
+import java.time.Period;
 import java.util.ArrayList;
 
 
@@ -67,17 +68,13 @@ import java.util.ArrayList;
     public static void main( final String[ ] args ) {
 
         FileIO manager = new FileIO();
+        ArrayList<Process> y = manager.readInputFIle();
 
-        Process p1 = new Process(1,2,4,5);
-        Process p2 = new Process(2,3,2,8);
-        Process p4 = new Process(8,8,8,9);
-        Process p3 = new Process(9,8,8,8);
         ArrayList<Process> list = new ArrayList<Process>();
-        list.add(p1);
-        list.add(p2);
-        list.add(p3);
-        list.add(p4);
-        list.add(new Process(10, 3, 1, 1));
+        for(int i=0 ; i<y.size(); i++) {
+            Process temp = y.get(i);
+            list.add(new Process(temp.getNumber(),temp.getArrivalTime(), temp.getBurstTime(), temp.getPriority()));
+        }
 
         Schedule x = NPHPF.schedule(list,1.0);
 
