@@ -16,10 +16,7 @@ public class SRTN {
         nodesTime.add(processesList.get(0).getArrivalTime());
 
         //store process numbers in a list
-        ArrayList<Integer> ProcessNumbers = new ArrayList<>();
-        for(Process process : processesList) {
-            ProcessNumbers.add(process.getNumber());
-        }
+        ArrayList<Integer> processNumbers = new ArrayList<>();
 
         //initially remainingTime for all processes equals burst time.
         ArrayList<Double> remainingTimeList = new ArrayList<>();
@@ -35,7 +32,7 @@ public class SRTN {
 
         //Weighted turnaround time List
         ArrayList<Double> weightedTurnaroundTime = new ArrayList<Double>();
-
+        ArrayList<Double> startTime = new ArrayList<>();
 
         //remainingTime for the processes to finish.
         Double timePassed = processesList.get(0).getArrivalTime();
@@ -68,13 +65,15 @@ public class SRTN {
                         timePassed += contextSwitch;
                         nodesProcessNumbers.add(0);
                         nodesTime.add(timePassed);
-                        turnaroundTime = timePassed -
-                                processesList.get(previousProcess).getArrivalTime();
+
                     }
                     nodesProcessNumbers.add(
                             processesList.get(currentProcess).getNumber());
                     timePassed += remainingTimeList.get(currentProcess);
                     remainingTimeList.set(currentProcess, 0.0);
+                    processNumbers.add(currentProcess);
+                    turnaroundTimeList.add(timePassed -
+                            processesList.get(currentProcess).getArrivalTime());
                     nodesTime.add(timePassed);
                     previousProcess = currentProcess;
                 }
@@ -88,14 +87,16 @@ public class SRTN {
                            timePassed += contextSwitch;
                            nodesProcessNumbers.add(0);
                            nodesTime.add(timePassed);
-                           turnaroundTime = timePassed -
-                                   processesList.get(previousProcess).getArrivalTime();
+
                        }
                        nodesProcessNumbers.add(
                                processesList.get(currentProcess).getNumber());
                        timePassed += remainingTimeList.get(currentProcess);
                        remainingTimeList.set(currentProcess, 0.0);
                        nodesTime.add(timePassed);
+                       processNumbers.add(currentProcess);
+                       turnaroundTimeList.add(timePassed -
+                               processesList.get(currentProcess).getArrivalTime());
                        previousProcess = currentProcess;
                    }
                    else {
@@ -112,8 +113,7 @@ public class SRTN {
                         timePassed += contextSwitch;
                         nodesProcessNumbers.add(0);
                         nodesTime.add(timePassed);
-                        turnaroundTime = timePassed -
-                                processesList.get(previousProcess).getArrivalTime();
+
                     }
                     nodesProcessNumbers.add(
                             processesList.get(currentProcess).getNumber());
@@ -132,13 +132,15 @@ public class SRTN {
                     timePassed += contextSwitch;
                     nodesProcessNumbers.add(0);
                     nodesTime.add(timePassed);
-                    turnaroundTime = timePassed -
-                            processesList.get(previousProcess).getArrivalTime();
+
                 }
                 nodesProcessNumbers.add(
                         processesList.get(currentProcess).getNumber());
                 timePassed += remainingTimeList.get(currentProcess);
                 remainingTimeList.set(currentProcess, 0.0);
+                processNumbers.add(currentProcess);
+                turnaroundTimeList.add(timePassed -
+                        processesList.get(currentProcess).getArrivalTime());
                 nodesTime.add(timePassed);
                 previousProcess = currentProcess;
             }
@@ -146,7 +148,12 @@ public class SRTN {
 
         nodesProcessNumbers.add(0);
 
-        Schedule schedule = new Schedule(nodesTime, nodesProcessNumbers, null, null, null, null);
+        for(int i = 0; i < turnaroundTimeList.size(); i++) {
+            weightedTurnaroundTime.add(turnaroundTimeList.get(i) /
+                    processesList.get(i).getBurstTime());
+        }
+
+        Schedule schedule = new Schedule(nodesTime, nodesProcessNumbers, null, turnaroundTimeList, weightedTurnaroundTime, processNumbers);
 
         return schedule;
     }
@@ -167,7 +174,6 @@ public class SRTN {
                 }
         }
         return nearestSRTNIndex;
-
 
     }
 
