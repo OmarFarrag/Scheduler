@@ -69,6 +69,19 @@ public class FileIO {
         return processesList;
     }
 
+    public void generateOutput(ArrayList<Integer> processNumber, ArrayList<Double> waitingTime,ArrayList<Double> turnaroundTime,ArrayList<Double> weightedTurnaroundTime)
+    {
+        BufferedWriter writer;
+        try{
+            writer = new BufferedWriter(new FileWriter("output"));
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+
+    }
 
 
 }

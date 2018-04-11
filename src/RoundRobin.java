@@ -37,6 +37,8 @@ public class RoundRobin {
         Process temp = null;
         int prevProcess = 0;
         int numberOfProcesses = processesList.size();
+
+
         while(done<numberOfProcesses )
         {
 
@@ -62,15 +64,20 @@ public class RoundRobin {
                 NodesTime.add(time);
                 NodesProcessesNumbers.add(temp.getNumber());
 
+                double tempRemTime = temp.getRemainingTime();
                 temp.decreaseRemainingTime(quantum);
 
                 if(temp.getRunning()==false){
                     temp.setRunning(true);
                     temp.setWaitTime(time-temp.getArrivalTime());
                 }
-
-                time = time+quantum;
-
+                if(temp.getRemainingTime()>0) {
+                    time = time + quantum;
+                }
+                else
+                {
+                    time += tempRemTime;
+                }
                 if(temp.getRemainingTime()<=0)
                 {
                     processNumber.add(temp.getNumber());
@@ -83,6 +90,13 @@ public class RoundRobin {
                     weightedTurnaroundTime.add(t/temp.getBurstTime());
 
                     done++;
+                    if(done==numberOfProcesses)
+                    {
+                        NodesTime.add(time);
+                        NodesProcessesNumbers.add(temp.getNumber());
+                        NodesTime.add(time);
+                        NodesProcessesNumbers.add(0);
+                    }
 
                     temp=null;
                 }

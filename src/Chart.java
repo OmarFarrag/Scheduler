@@ -35,7 +35,7 @@ import java.util.ArrayList;
                     true , true , false);
 
             ChartPanel chartPanel = new ChartPanel( xylineChart );
-            chartPanel.setPreferredSize( new java.awt.Dimension( 560 , 367 ) );
+            chartPanel.setPreferredSize( new java.awt.Dimension( 900 , 367 ) );
             final XYPlot plot = xylineChart.getXYPlot( );
 
             XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
@@ -76,12 +76,15 @@ import java.util.ArrayList;
             list.add(new Process(temp.getNumber(),temp.getArrivalTime(), temp.getBurstTime(), temp.getPriority()));
         }
 
-        Schedule x = NPHPF.schedule(list,1.0);
+        Schedule x = RoundRobin.schedule(list,0,3);
 
         Chart chart = new Chart("Browser Usage Statistics",
                 "Which Browser are you using?",x.m_NodesProcessesNumbers,x.m_NodesTime);
         chart.pack( );
         RefineryUtilities.centerFrameOnScreen( chart );
         chart.setVisible( true );
+        manager.generateOutput(x.m_processNumber,x.m_waitingTime,x.m_turnaroundTime,x.m_weightedTurnaroundTime);
+
+
     }
 }
