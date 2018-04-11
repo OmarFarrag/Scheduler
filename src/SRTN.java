@@ -81,6 +81,7 @@ public class SRTN {
                    while(nextArrivalTime.equals(timePassed)) {
                        arrivalTimeIndex++;
                        nextArrivalTime = processesList.get(arrivalTimeIndex).getArrivalTime();
+                       //
                    }
                    if(remainingTimeList.get(currentProcess) < nextArrivalTime) {
                        if(currentProcess != previousProcess) {
