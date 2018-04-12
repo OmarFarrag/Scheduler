@@ -6,9 +6,10 @@ import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
 
 public class CustomRR {
-    static Schedule schedule (ArrayList<Process> processesList , double contextSwitch, double quantum)
+    static Schedule schedule (ArrayList<Process> processesList , double contextSwitch)
     {
-        processesList.sort(comparing(Process::getArrivalTime));
+        double quantum=0;
+        processesList.sort(comparing(Process::getArrivalTime).thenComparing(Process::getPriority));
 
         Queue<Process> activeProcesses = new LinkedList<Process>();
 
@@ -51,6 +52,7 @@ public class CustomRR {
             if(temp!=null){ activeProcesses.add(temp);}
             if(activeProcesses.peek()!= null) {
                 temp = activeProcesses.remove();
+                quantum = temp.getPriority();/////////////////////
 
                 if(prevProcess!=0 && prevProcess!=temp.getNumber())
                 {
@@ -65,19 +67,42 @@ public class CustomRR {
                 NodesProcessesNumbers.add(temp.getNumber());
 
                 double tempRemTime = temp.getRemainingTime();
-                temp.decreaseRemainingTime(quantum);
+
 
                 if(temp.getRunning()==false){
                     temp.setRunning(true);
                     temp.setWaitTime(time-temp.getArrivalTime());
                 }
-                if(temp.getRemainingTime()>0) {
-                    time = time + quantum;
+
+
+
+                if(temp.getRemainingTime()-quantum>0) {
+                    if(processesList.get(0).getArrivalTime()<=time+quantum)
+                    {
+                        temp.decreaseRemainingTime(processesList.get(0).getArrivalTime()-time);
+                        time = processesList.get(0).getArrivalTime();
+
+                    }
+                    else {
+                        time = time + quantum;
+                        temp.decreaseRemainingTime(quantum);
+                    }
                 }
                 else
                 {
-                    time += tempRemTime;
+                    if(processesList.get(0).getArrivalTime()<=time+tempRemTime)
+                    {
+                        temp.decreaseRemainingTime(processesList.get(0).getArrivalTime()-time);
+                        time = processesList.get(0).getArrivalTime();
+
+                    }
+                    else {
+                        time += tempRemTime;
+                        temp.decreaseRemainingTime(quantum);
+                    }
                 }
+
+
                 if(temp.getRemainingTime()<=0)
                 {
                     processNumber.add(temp.getNumber());
