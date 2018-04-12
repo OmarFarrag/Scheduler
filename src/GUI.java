@@ -1,9 +1,12 @@
 
 
+import org.jfree.ui.RefineryUtilities;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 
 public class GUI extends JFrame {
@@ -11,6 +14,7 @@ public class GUI extends JFrame {
     private JTextField enterFileNameText;
     private JButton chooseFileButton;
     private Handler handler;
+    private ArrayList<Process> processes;
 
     public GUI(){
         super("Scheduler");
@@ -39,7 +43,10 @@ public class GUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
             if(actionEvent.getSource() == chooseFileButton) {
-                ScheduleViewer scheduleViewer = new ScheduleViewer();
+                String filename= enterFileNameText.getText();
+                FileIO filemanager = new FileIO();
+                processes = filemanager.readInputFIle(filename);
+                ScheduleViewer scheduleViewer = new ScheduleViewer(processes);
                 scheduleViewer.setVisible(true);
             }
         }
@@ -56,40 +63,52 @@ class ScheduleViewer extends JFrame {
     first step: choose algorithm from radioButtons
      */
     private JRadioButton RR;
-    private JRadioButton SRTN;
-    private JRadioButton NPHPF;
+    private JRadioButton SRTNBtn;
+    private JRadioButton NPHPFBtn;
     private ButtonGroup buttonGroup;
     private JButton chooseAlgorithmButton;
     private ButtonModel buttonModel;
     private JTextField chosenAlgorithm;
     private EventHandler eventHandler;
 
+    private ArrayList<Process> processes;
+
     /*
     second step: choose context switch
      */
-    private JButton enterContextSwitchTimeButton;
-    private JTextField contextSwitchText;
+    private  JTextField contextSwitchTxt;
+    private JTextField quantumTxt;
 
-    ScheduleViewer() {
+    ScheduleViewer(ArrayList<Process> f_processes) {
+
+
+
         super("Scheduler");
+
+        processes=f_processes;
+
         setLayout(new GridBagLayout());
         setSize(500, 400);
 
         RR = new JRadioButton("Round Robin");
         RR.setActionCommand("RR");
-        SRTN = new JRadioButton("SRTN");
-        SRTN.setActionCommand("SRTN");
-        SRTN.setToolTipText("Shortest Remaining Time Next Algorithm");
-        NPHPF = new JRadioButton("NPHPF");
-        NPHPF.setActionCommand("NPHPF");
-        NPHPF.setToolTipText("Non Preemtive Highest Priority First Algorithm");
+        SRTNBtn = new JRadioButton("SRTN");
+        SRTNBtn.setActionCommand("SRTN");
+        SRTNBtn.setToolTipText("Shortest Remaining Time Next Algorithm");
+        NPHPFBtn = new JRadioButton("NPHPF");
+        NPHPFBtn.setActionCommand("NPHPF");
+        NPHPFBtn.setToolTipText("Non Preemtive Highest Priority First Algorithm");
+        JLabel contextSwitchLbl= new JLabel("Context switch: ");
+        contextSwitchTxt= new JTextField("Context switch");
+        JLabel quantumLbl= new JLabel("Quantum: ");
+        quantumTxt= new JTextField("Quantum");
         chooseAlgorithmButton = new JButton("OK");
         chooseAlgorithmButton.setSize(50, 20);
 
         buttonGroup = new ButtonGroup();
         buttonGroup.add(RR);
-        buttonGroup.add(SRTN);
-        buttonGroup.add(NPHPF);
+        buttonGroup.add(SRTNBtn);
+        buttonGroup.add(NPHPFBtn);
 
         eventHandler = new EventHandler();
         chooseAlgorithmButton.addActionListener(eventHandler);
@@ -99,10 +118,20 @@ class ScheduleViewer extends JFrame {
         gridBagConstraints.anchor = GridBagConstraints.LINE_START;
         add(RR, gridBagConstraints);
         gridBagConstraints.gridy++;
-        add(SRTN, gridBagConstraints);
+        add(SRTNBtn, gridBagConstraints);
         gridBagConstraints.gridy++;
-        add(NPHPF, gridBagConstraints);
+        add(NPHPFBtn, gridBagConstraints);
         gridBagConstraints.gridy++;
+        add(contextSwitchLbl, gridBagConstraints);
+        gridBagConstraints.gridx++;
+        add(contextSwitchTxt, gridBagConstraints);
+        gridBagConstraints.gridy++;
+        gridBagConstraints.gridx--;
+        add(quantumLbl, gridBagConstraints);
+        gridBagConstraints.gridx++;
+        add(quantumTxt, gridBagConstraints);
+        gridBagConstraints.gridy++;
+        gridBagConstraints.gridx--;
         add(chooseAlgorithmButton, gridBagConstraints);
     }
 
@@ -113,20 +142,26 @@ class ScheduleViewer extends JFrame {
         public void actionPerformed(ActionEvent actionEvent) {
             if(actionEvent.getSource() == chooseAlgorithmButton) {
                 buttonModel = buttonGroup.getSelection();
+                double contextSwitch = Double.parseDouble(contextSwitchTxt.getText());
+                double quantum = Double.parseDouble(quantumTxt.getText());
                 chosenAlgorithm = new JTextField(40);
                 chosenAlgorithm.setEditable(false);
                 String r = null;
+                Schedule schedule = null;
                 try {
                     r = buttonModel.getActionCommand();
                 }catch (Exception e) {}
                 if(r == "RR") {
                     chosenAlgorithm.setText("Round Robin Algorithm Selected!");
+                    schedule = RoundRobin.schedule(processes,contextSwitch,quantum);
                 }
                 else if (r == "SRTN") {
                     chosenAlgorithm.setText("shortest remaining time Algorithm next selected!");
+                    schedule = SRTN.schedule(processes,contextSwitch);
                 }
                 else if (r == "NPHPF") {
                     chosenAlgorithm.setText("non preemtive highest priority first Algorithm selected");
+                    schedule = NPHPF.schedule(processes,contextSwitch);
                 }
                 if(r != null) {
                     chooseAlgorithmButton.setEnabled(false);
@@ -136,6 +171,14 @@ class ScheduleViewer extends JFrame {
                     add(chosenAlgorithm, gridBagConstraints);
                     revalidate();
                 }
+
+                FileIO manager= new FileIO();
+                Chart chart = new Chart("Browser Usage Statistics",
+                        "Which Browser are you using?",schedule.m_NodesProcessesNumbers,schedule.m_NodesTime);
+                chart.pack( );
+                RefineryUtilities.centerFrameOnScreen( chart );
+                chart.setVisible( true );
+                manager.generateOutput(schedule.m_processNumber,schedule.m_waitingTime,schedule.m_turnaroundTime,schedule.m_weightedTurnaroundTime);
             }
         }
     }

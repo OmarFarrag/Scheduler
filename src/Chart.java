@@ -68,15 +68,15 @@ import java.util.ArrayList;
     public static void main( final String[ ] args ) {
 
         FileIO manager = new FileIO();
-        ArrayList<Process> y = manager.readInputFIle();
+        ArrayList<Process> y = manager.readInputFIle("RR1");
 
-        ArrayList<Process> list = new ArrayList<Process>();
+       /* ArrayList<Process> list = new ArrayList<Process>();
         for(int i=0 ; i<y.size(); i++) {
             Process temp = y.get(i);
             list.add(new Process(temp.getNumber(),temp.getArrivalTime(), temp.getBurstTime(), temp.getPriority()));
-        }
+        }*/
 
-        Schedule x = NPHPF.schedule(list,0);
+        Schedule x = RoundRobin.schedule(y,0.0,3);
 
         Chart chart = new Chart("Browser Usage Statistics",
                 "Which Browser are you using?",x.m_NodesProcessesNumbers,x.m_NodesTime);

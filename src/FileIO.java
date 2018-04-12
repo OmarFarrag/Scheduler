@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 
 
@@ -7,12 +8,12 @@ import java.util.Scanner;
 
 public class FileIO {
 
-    public ArrayList<Process> readInputFIle() {
+    public ArrayList<Process> readInputFIle(String file) {
 
         ArrayList<Process> processes = null;
         try {
 
-            Scanner s = new Scanner(new File("E:/Scheduler/HPF1.txt"));
+            Scanner s = new Scanner(new File("E:/Scheduler/"+file+".txt"));
             ArrayList<String> list = new ArrayList<String>();
             while (s.hasNext()) {
                 list.add(s.next());
@@ -80,6 +81,19 @@ public class FileIO {
         catch (Exception e)
         {
             System.out.println(e.getMessage());
+        }
+
+        for(int i = 0 ; i<processNumber.size()-1; i++)
+        {
+            for(int j=i+1; j<processNumber.size();j++) {
+                if (processNumber.get(i)>processNumber.get(j))
+                {
+                    Collections.swap(processNumber,i,j);
+                    Collections.swap(waitingTime,i,j);
+                    Collections.swap(turnaroundTime,i,j);
+                    Collections.swap(weightedTurnaroundTime,i,j);
+                }
+            }
         }
 
         try {
